@@ -1,0 +1,168 @@
+// Matriz y vectores 
+//Duvan santiago Barrantes , Sebastián Herrera Colomba 
+
+int n = 3;
+float[][] MatrizA, MatrizB, resultado;
+float[] Vector1, Vector2, resultadoVector;
+float productoPunto;
+
+void setup() {
+size(800, 600);
+background(255);
+
+inicializarDatos();
+
+println("Datos");
+mostrar("Matriz A:", MatrizA);
+mostrar("Matriz B:", MatrizB);
+mostrar("Vector v1:", Vector1);
+mostrar("Vector v2:", Vector2);
+
+println("Operaciones");
+
+println("\n1. PRODUCTO A x B:");
+if ((resultado = productoMatrices(MatrizA, MatrizB)) != null) mostrar("Resultado:", resultado);
+
+println("\n2. PRODUCTO A x v1:");
+if ((resultadoVector = productoMatrizVector(MatrizA, Vector1)) != null) mostrar("Resultado:", resultadoVector);
+
+println("\n3. PRODUCTO PUNTO v1 · v2:");
+println("Resultado: " + (productoPunto = productoPunto(Vector1, Vector2)));
+
+println("\n4. TRANSPUESTA DE A:");
+mostrar("Transpuesta:", transpuesta(MatrizA));
+
+println("\n5. INVERSA DE A:");
+float[][] inversaA = inversa(MatrizA);
+if (inversaA != null) mostrar("Inversa:", inversaA);
+else println("La matriz A no es invertible");
+
+println("\n=== PROGRAMA FINALIZADO ===");
+}
+
+void inicializarDatos() {
+MatrizA = new float[n][n];
+MatrizB = new float[n][n];
+Vector1 = new float[n];
+Vector2 = new float[n];
+
+for (int i = 0; i < n; i++) {
+for (int j = 0; j < n; j++) {
+MatrizA[i][j] = random(1, 10);
+MatrizB[i][j] = random(1, 10);
+}
+Vector1[i] = random(1, 10);
+Vector2[i] = random(1, 10);
+}
+}
+
+float[][] productoMatrices(float[][] a, float[][] b) {
+if (a.length != b.length) return null;
+
+int m = a.length;
+float[][] r = new float[m][m];
+
+for (int i = 0; i < m; i++)
+for (int j = 0; j < m; j++)
+for (int k = 0; k < m; k++)
+r[i][j] += a[i][k] * b[k][j];
+
+return r;
+}
+
+float[] productoMatrizVector(float[][] m, float[] v) {
+if (m.length != v.length) return null;
+
+float[] r = new float[m.length];
+
+for (int i = 0; i < m.length; i++)
+for (int j = 0; j < m.length; j++)
+r[i] += m[i][j] * v[j];
+
+return r;
+}
+
+float productoPunto(float[] v1, float[] v2) {
+if (v1.length != v2.length) return 0;
+
+float r = 0;
+for (int i = 0; i < v1.length; i++) r += v1[i] * v2[i];
+return r;
+}
+
+float[][] transpuesta(float[][] m) {
+float[][] t = new float[m[0].length][m.length];
+
+for (int i = 0; i < m.length; i++)
+for (int j = 0; j < m[0].length; j++)
+t[j][i] = m[i][j];
+
+return t;
+}
+
+float[][] inversa(float[][] m) {
+int n = m.length;
+float[][] a = new float[n][2*n];
+
+for (int i = 0; i < n; i++)
+for (int j = 0; j < n; j++) {
+a[i][j] = m[i][j];
+a[i][j+n] = (i == j) ? 1 : 0;
+}
+
+for (int i = 0; i < n; i++) {
+int filaPivote = -1;
+for (int k = i; k < n; k++) {
+if (a[k][i] != 0) {
+filaPivote = k;
+break;
+}
+}
+
+if (filaPivote == -1) return null;
+
+if (filaPivote != i) {
+float[] temp = a[i];
+a[i] = a[filaPivote];
+a[filaPivote] = temp;
+}
+
+float pivote = a[i][i];
+for (int j = 0; j < 2*n; j++) a[i][j] = a[i][j] / pivote;
+
+for (int k = 0; k < n; k++)
+if (k != i) {
+float factor = a[k][i];
+for (int j = 0; j < 2*n; j++) a[k][j] = a[k][j] - factor * a[i][j];
+}
+}
+
+float[][] inv = new float[n][n];
+for (int i = 0; i < n; i++)
+for (int j = 0; j < n; j++)
+inv[i][j] = a[i][j+n];
+
+return inv;
+}
+
+void mostrar(String titulo, float[][] m) {
+println(titulo);
+for (int i = 0; i < m.length; i++) {
+print("[");
+for (int j = 0; j < m[i].length; j++) {
+print(m[i][j]);
+if (j < m[i].length-1) print("\t");
+}
+println("]");
+}
+}
+
+void mostrar(String titulo, float[] v) {
+println(titulo);
+print("[");
+for (int i = 0; i < v.length; i++) {
+print(v[i]);
+if (i < v.length-1) print("\t");
+}
+println("]");
+}
